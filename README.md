@@ -8,6 +8,10 @@ gets all comments specific to a single post.
 
 gets all posts related to a specific user.
 
+## External API resource 
+
+https://jsonplaceholder.typicode.com/
+
 ## External Libraries
 
 https://materializecss.com/icons.html
