@@ -1,0 +1,4 @@
+.userName:hover {
+  opacity: 0.7;
+  box-shadow: 2px 2px 2px 2px #d4c7c7;
+}
