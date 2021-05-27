@@ -5,20 +5,27 @@ import "../styles/postBody.css";
 import Loading from "./Loading";
 
 class PostBody extends Component {
+  _isMounted = false;
   state = {
     post: null,
   };
 
   componentDidMount() {
+    this._isMounted = true;
     axios
       .get(
         `https://jsonplaceholder.typicode.com/posts/${this.props.match.params.id}`
       )
-      .then((response) =>
-        this.setState({
-          post: response.data,
-        })
-      );
+      .then((response) => {
+        if (this._isMounted) {
+          this.setState({
+            post: response.data,
+          });
+        }
+      });
+  }
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {

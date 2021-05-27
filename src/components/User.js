@@ -3,17 +3,26 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 class User extends Component {
+  _isMounted = false;
   state = {
     user: {},
   };
+
   componentDidMount() {
+    this._isMounted = true;
     axios
       .get(`https://jsonplaceholder.typicode.com/users/${this.props.userId}`)
-      .then((response) =>
-        this.setState({
-          user: response.data,
-        })
-      );
+      .then((response) => {
+        if (this._isMounted) {
+          this.setState({
+            user: response.data,
+          });
+        }
+      });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {

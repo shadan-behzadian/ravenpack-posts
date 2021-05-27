@@ -7,6 +7,7 @@ import "../styles/posts.css";
 import Loading from "./Loading";
 
 class Posts extends Component {
+  _isMounted = false;
   state = {
     posts: [],
     selectedpost: "",
@@ -19,12 +20,19 @@ class Posts extends Component {
   };
 
   componentDidMount() {
-    axios.get("https://jsonplaceholder.typicode.com/posts").then((response) =>
-      this.setState({
-        posts: response.data,
-      })
-    );
+    this._isMounted = true;
+    axios.get("https://jsonplaceholder.typicode.com/posts").then((response) => {
+      if (this._isMounted) {
+        this.setState({
+          posts: response.data,
+        });
+      }
+    });
   }
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   render() {
     if (this.state.posts.length !== 0) {
       return (
