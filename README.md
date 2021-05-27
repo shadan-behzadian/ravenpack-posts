@@ -1,6 +1,31 @@
-# Getting Started with Create React App
+# Introduction 
+
+A multipage responsive web-app made with json placeholder data.
+
+gets all posts.
+
+gets all comments specific to a single post.
+
+gets all posts related to a specific user.
+
+## External Libraries
+
+https://materializecss.com/icons.html
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Install
+In project directoty
+ ```
+ npm install
+ ```
+## Running the project
+```
+npm start
+```
+Open (http://localhost:3000/)
 
 ## Available Scripts
 
