@@ -19,16 +19,21 @@ class Posts extends Component {
     });
   };
 
+  getPosts = async () => {
+    let res = await axios.get("https://jsonplaceholder.typicode.com/posts");
+    let data = res.data;
+    if (this._isMounted) {
+      this.setState({
+        posts: data,
+      });
+    }
+  };
+
   componentDidMount() {
     this._isMounted = true;
-    axios.get("https://jsonplaceholder.typicode.com/posts").then((response) => {
-      if (this._isMounted) {
-        this.setState({
-          posts: response.data,
-        });
-      }
-    });
+    this.getPosts();
   }
+
   componentWillUnmount() {
     this._isMounted = false;
   }

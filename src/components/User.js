@@ -8,17 +8,21 @@ class User extends Component {
     user: {},
   };
 
+  getUser = async () => {
+    let res = await axios.get(
+      `https://jsonplaceholder.typicode.com/users/${this.props.userId}`
+    );
+    let data = res.data;
+    if (this._isMounted) {
+      this.setState({
+        user: data,
+      });
+    }
+  };
+
   componentDidMount() {
     this._isMounted = true;
-    axios
-      .get(`https://jsonplaceholder.typicode.com/users/${this.props.userId}`)
-      .then((response) => {
-        if (this._isMounted) {
-          this.setState({
-            user: response.data,
-          });
-        }
-      });
+    this.getUser();
   }
 
   componentWillUnmount() {

@@ -5,18 +5,29 @@ import "../styles/userSpecificPosts.css";
 import Loading from "./Loading";
 
 class UserSpecificPosts extends Component {
+  _isMounted = false;
   state = {
     posts: [],
   };
 
-  componentDidMount() {
-    axios.get("https://jsonplaceholder.typicode.com/posts").then((response) =>
+  getPosts = async () => {
+    let res = await axios.get("https://jsonplaceholder.typicode.com/posts");
+    let data = res.data;
+    if (this._isMounted) {
       this.setState({
-        posts: response.data,
-      })
-    );
+        posts: data,
+      });
+    }
+  };
+
+  componentDidMount() {
+    this._isMounted = true;
+    this.getPosts();
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
   render() {
     if (this.state.posts.length !== 0) {
       return (

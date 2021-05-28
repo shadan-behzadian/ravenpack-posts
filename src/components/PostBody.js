@@ -10,19 +10,21 @@ class PostBody extends Component {
     post: null,
   };
 
+  getUniquePost = async () => {
+    let res = await axios.get(
+      `https://jsonplaceholder.typicode.com/posts/${this.props.match.params.id}`
+    );
+    let data = res.data;
+    if (this._isMounted) {
+      this.setState({
+        post: data,
+      });
+    }
+  };
+
   componentDidMount() {
     this._isMounted = true;
-    axios
-      .get(
-        `https://jsonplaceholder.typicode.com/posts/${this.props.match.params.id}`
-      )
-      .then((response) => {
-        if (this._isMounted) {
-          this.setState({
-            post: response.data,
-          });
-        }
-      });
+    this.getUniquePost();
   }
   componentWillUnmount() {
     this._isMounted = false;

@@ -15,19 +15,21 @@ class PostComments extends Component {
     });
   };
 
+  getComments = async () => {
+    let res = await axios.get(
+      `https://jsonplaceholder.typicode.com/posts/${this.props.postId}/comments`
+    );
+    let data = res.data;
+    if (this._isMounted) {
+      this.setState({
+        comments: data,
+      });
+    }
+  };
+
   componentDidMount() {
     this._isMounted = true;
-    axios
-      .get(
-        `https://jsonplaceholder.typicode.com/posts/${this.props.postId}/comments`
-      )
-      .then((response) => {
-        if (this._isMounted) {
-          this.setState({
-            comments: response.data,
-          });
-        }
-      });
+    this.getComments();
   }
 
   componentWillUnmount() {
