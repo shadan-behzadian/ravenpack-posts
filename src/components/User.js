@@ -1,44 +1,42 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-class User extends Component {
-  _isMounted = false;
-  state = {
-    user: {},
-  };
+function User(props) {
+  const [user, setUser] = useState({});
+  const [error, setError] = useState(null);
 
-  getUser = async () => {
-    let res = await axios.get(
-      `https://jsonplaceholder.typicode.com/users/${this.props.userId}`
-    );
-    let data = res.data;
-    if (this._isMounted) {
-      this.setState({
-        user: data,
-      });
+  useEffect(() => {
+    let isMounted = false;
+    async function getUser() {
+      try {
+        const res = await axios.get(
+          `https://jsonplaceholder.typicode.com/users/${props.userId}`
+        );
+        if (!isMounted) {
+          setUser(res.data);
+        }
+      } catch (err) {
+        setError(err.message);
+      }
     }
-  };
+    getUser();
+    return function () {
+      isMounted = true;
+    };
+  }, [props.userId]);
 
-  componentDidMount() {
-    this._isMounted = true;
-    this.getUser();
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  render() {
-    return (
-      <Link to={`/user/${this.props.userId}`}>
-        <div className="userName">
+  return (
+    <div>
+      {error && <div className="error">{error}</div>}
+      {user && (
+        <Link to={`/user/${props.userId}`} className="userName">
           <i className="material-icons">person</i>
-          {this.state.user.name}
-        </div>
-      </Link>
-    );
-  }
+          {user.name}
+        </Link>
+      )}
+    </div>
+  );
 }
 
 export default User;

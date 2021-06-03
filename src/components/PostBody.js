@@ -1,50 +1,51 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import PostComments from "./PostComments";
 import axios from "axios";
 import "../styles/postBody.css";
 import Loading from "./Loading";
+import "../styles/error.css";
 
-class PostBody extends Component {
-  _isMounted = false;
-  state = {
-    post: null,
-  };
-
-  getUniquePost = async () => {
-    let res = await axios.get(
-      `https://jsonplaceholder.typicode.com/posts/${this.props.match.params.id}`
-    );
-    let data = res.data;
-    if (this._isMounted) {
-      this.setState({
-        post: data,
-      });
+function PostBody(props) {
+  const [post, setPost] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let isMounted = false;
+    async function getUniquePost() {
+      try {
+        const res = await axios.get(
+          `https://jsonplaceholder.typicode.com/posts/${props.match.params.id}`
+        );
+        if (!isMounted) {
+          setLoading(false);
+          setPost(res.data);
+        }
+      } catch (err) {
+        setLoading(false);
+        setError(err.message);
+      }
     }
-  };
 
-  componentDidMount() {
-    this._isMounted = true;
-    this.getUniquePost();
-  }
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
+    getUniquePost();
+    return function () {
+      isMounted = true;
+    };
+  }, [props.match.params.id]);
 
-  render() {
-    if (this.state.post !== null) {
-      return (
+  return (
+    <div>
+      {error && <div className="error">{error}</div>}
+      {loading && <Loading />}
+      {post != null && (
         <div className="postBody">
-          <p>Title: {this.state.post.title}</p>
-          <p>Body: {this.state.post.body}</p>
+          <p>Title: {post.title}</p>
+          <p>Body: {post.body}</p>
           <div className="postComments">
-            <PostComments postId={this.props.match.params.id} />
+            <PostComments postId={props.match.params.id} />
           </div>
         </div>
-      );
-    } else {
-      return <Loading />;
-    }
-  }
+      )}
+    </div>
+  );
 }
-
 export default PostBody;

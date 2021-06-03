@@ -1,48 +1,46 @@
 import React from "react";
 import axios from "axios";
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import User from "./User";
 import { Link } from "react-router-dom";
 import "../styles/posts.css";
 import Loading from "./Loading";
+import "../styles/error.css";
+function Posts() {
+  const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-class Posts extends Component {
-  _isMounted = false;
-  state = {
-    posts: [],
-    selectedpost: "",
-  };
-
-  toggleInfo = (postId) => {
-    this.setState({
-      selectedpost: postId,
-    });
-  };
-
-  getPosts = async () => {
-    let res = await axios.get("https://jsonplaceholder.typicode.com/posts");
-    let data = res.data;
-    if (this._isMounted) {
-      this.setState({
-        posts: data,
-      });
+  useEffect(() => {
+    let isMounted = false;
+    async function getPosts() {
+      try {
+        const res = await axios.get(
+          "https://jsonplaceholder.typicode.com/posts"
+        );
+        if (!isMounted) {
+          setLoading(false);
+          setPosts(res.data);
+        }
+      } catch (err) {
+        setLoading(false);
+        setError(err.message);
+      }
     }
-  };
 
-  componentDidMount() {
-    this._isMounted = true;
-    this.getPosts();
-  }
+    getPosts();
+    return function () {
+      isMounted = true;
+    };
+  });
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  render() {
-    if (this.state.posts.length !== 0) {
-      return (
+  return (
+    <div>
+      {error && <div className="error">{error}</div>}
+      {loading && <Loading />}
+      {posts.length !== 0 && (
         <div className="posts">
-          {this.state.posts.map((post) => (
+          {posts.map((post) => (
             <div key={post.id} className="post">
               <User userId={post.userId} />
               <Link to={`/post/${post.id}`}>
@@ -54,11 +52,9 @@ class Posts extends Component {
             </div>
           ))}
         </div>
-      );
-    } else {
-      return <Loading />;
-    }
-  }
+      )}
+    </div>
+  );
 }
 
 export default Posts;

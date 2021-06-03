@@ -1,40 +1,45 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import PostComments from "./PostComments";
 import "../styles/userSpecificPosts.css";
 import Loading from "./Loading";
 
-class UserSpecificPosts extends Component {
-  _isMounted = false;
-  state = {
-    posts: [],
-  };
+function UserSpecificPosts(props) {
+  const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  getPosts = async () => {
-    let res = await axios.get("https://jsonplaceholder.typicode.com/posts");
-    let data = res.data;
-    if (this._isMounted) {
-      this.setState({
-        posts: data,
-      });
+  useEffect(() => {
+    let isMounted = false;
+    async function getPosts() {
+      try {
+        const res = await axios.get(
+          "https://jsonplaceholder.typicode.com/posts"
+        );
+        if (!isMounted) {
+          setLoading(false);
+          setPosts(res.data);
+        }
+      } catch (err) {
+        setLoading(false);
+        setError(err.message);
+      }
     }
-  };
+    getPosts();
+    return function () {
+      isMounted = true;
+    };
+  });
 
-  componentDidMount() {
-    this._isMounted = true;
-    this.getPosts();
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-  render() {
-    if (this.state.posts.length !== 0) {
-      return (
+  return (
+    <div>
+      {error && <div className="error">{error}</div>}
+      {loading && <Loading />}
+      {posts.length !== 0 && (
         <div>
-          {this.state.posts.map(
+          {posts.map(
             (post) =>
-              post.userId === Number(this.props.match.params.userid) && (
+              post.userId === Number(props.match.params.userid) && (
                 <div key={post.id} className="userSpecificPosts">
                   <p> {post.title}</p>
                   <p>{post.body}</p>
@@ -43,11 +48,9 @@ class UserSpecificPosts extends Component {
               )
           )}
         </div>
-      );
-    } else {
-      return <Loading />;
-    }
-  }
+      )}
+    </div>
+  );
 }
 
 export default UserSpecificPosts;

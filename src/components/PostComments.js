@@ -1,55 +1,56 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/postComments.css";
+import "../styles/error.css";
 
-class PostComments extends Component {
-  _isMounted = false;
-  state = {
-    comments: [],
-    selectedTitle: "",
+function PostComments(props) {
+  const [comments, setComments] = useState([]);
+  const [selectedTitle, setSelectedTitle] = useState("");
+  const [error, setError] = useState(null);
+
+  const toggleInfo = (postId) => {
+    setSelectedTitle(postId);
   };
 
-  toggleInfo = (postId) => {
-    this.setState({
-      selectedTitle: postId,
-    });
-  };
-
-  getComments = async () => {
-    let res = await axios.get(
-      `https://jsonplaceholder.typicode.com/posts/${this.props.postId}/comments`
-    );
-    let data = res.data;
-    if (this._isMounted) {
-      this.setState({
-        comments: data,
-      });
+  useEffect(() => {
+    let isMounted = false;
+    async function getComments() {
+      try {
+        const res = await axios.get(
+          `https://jsonplaceholder.typicode.com/posts/${props.postId}/comments`
+        );
+        if (!isMounted) {
+          setComments(res.data);
+        }
+      } catch (err) {
+        setError(err.message);
+      }
     }
-  };
+    getComments();
+    return function () {
+      isMounted = true;
+    };
+  }, [props.postId]);
 
-  componentDidMount() {
-    this._isMounted = true;
-    this.getComments();
-  }
+  return (
+    <div>
+      {error && <div className="error">{error}</div>}
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  render() {
-    return this.state.comments.map((comment) => (
-      <div
-        key={comment.id}
-        className="comment"
-        onClick={() => this.toggleInfo(comment.id)}
-      >
-        <p key={comment.id}>title :{comment.name}</p>
-        {this.state.selectedTitle === comment.id ? (
-          <p className="slideDown">body: {comment.body}</p>
-        ) : null}
-      </div>
-    ));
-  }
+      {comments &&
+        comments.map((comment) => (
+          <div
+            key={comment.id}
+            className="comment"
+            onClick={() => toggleInfo(comment.id)}
+          >
+            <p key={comment.id}>title :{comment.name}</p>
+            {selectedTitle === comment.id ? (
+              <p className="slideDown">body: {comment.body}</p>
+            ) : null}
+          </div>
+        ))}
+    </div>
+  );
 }
 
 export default PostComments;
