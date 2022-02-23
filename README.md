@@ -2,11 +2,17 @@
 
 A multipage responsive web-app made with json placeholder data.
 
-gets all posts.
+a simple blog application using React and JSONPlaceholder.
+JSONPlaceholder is a publicly available API that provides various read-only endpoints, more information
+can be found on the website: https://jsonplaceholder.typicode.com/. For this tasks the relevant endpoints are:
+    * /posts
+    * /comments
+    * /users
+as well as the nested endpoints, such as /posts/1/comments Base Requirements:
+    * The user is able to browse a list of all existing posts
+    * The user is able to view a single post as well as any comments on the post
+    * The user is able to see all posts by a given user 
 
-gets all comments specific to a single post.
-
-gets all posts related to a specific user.
 
 ## External API resource 
 
